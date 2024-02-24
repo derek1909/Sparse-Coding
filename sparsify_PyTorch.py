@@ -39,16 +39,16 @@ def ISTA_PN(I,basis,lambd,num_iter,eta=None, useMAGMA=True):
     M = basis.size(1)
     if eta is None:
         if useMAGMA:
-            L = torch.max(torch.symeig(torch.mm(basis,basis.t()),eigenvectors=False)[0])
+            L = torch.max(torch.linalg.eigh(torch.mm(basis,basis.t()))[0])
             eta = 1./L
         else:
             eta = 1./cp.linalg.eigvalsh(cp.asarray(torch.mm(basis,basis.t()).cpu().numpy())).max().get().reshape(1)
-            eta = torch.from_numpy(eta.astype('float32')).cuda()
+            eta = torch.from_numpy(eta.astype('float32'))
 
-    #Res = torch.zeros(I.size()).type(dtype)
-    #ahat = torch.zeros(M,batch_size).type(dtype)
-    Res = torch.cuda.FloatTensor(I.size()).fill_(0)
-    ahat = torch.cuda.FloatTensor(M,batch_size).fill_(0)
+    Res = torch.zeros(I.size()).type(dtype)
+    ahat = torch.zeros(M,batch_size).type(dtype)
+    # Res = torch.cuda.FloatTensor(I.size()).fill_(0)
+    # ahat = torch.cuda.FloatTensor(M,batch_size).fill_(0)
 
     for t in range(num_iter):
         ahat = ahat.add(eta * basis.t().mm(Res))
@@ -70,13 +70,16 @@ def FISTA(I,basis,lambd,num_iter,eta=None, useMAGMA=True):
             eta = 1./L
         else:
             eta = 1./cp.linalg.eigvalsh(cp.asarray(torch.mm(basis,basis.t()).cpu().numpy())).max().get().reshape(1)
-            eta = torch.from_numpy(eta.astype('float32')).cuda()
+            eta = torch.from_numpy(eta.astype('float32'))
 
     tk_n = 1.
     tk = 1.
-    Res = torch.cuda.FloatTensor(I.size()).fill_(0)
-    ahat = torch.cuda.FloatTensor(M,batch_size).fill_(0)
-    ahat_y = torch.cuda.FloatTensor(M,batch_size).fill_(0)
+    Res = torch.zeros(I.size()).type(dtype)
+    ahat = torch.zeros(M,batch_size).type(dtype)
+    ahat_y = torch.zeros(M,batch_size).type(dtype)
+    # Res = torch.cuda.FloatTensor(I.size()).fill_(0)
+    # ahat = torch.cuda.FloatTensor(M,batch_size).fill_(0)
+    # ahat_y = torch.cuda.FloatTensor(M,batch_size).fill_(0)
 
     for t in range(num_iter):
         tk = tk_n
@@ -96,16 +99,16 @@ def ISTA(I,basis,lambd,num_iter,eta=None, useMAGMA=True):
     M = basis.size(1)
     if eta is None:
         if useMAGMA:
-            L = torch.max(torch.symeig(torch.mm(basis,basis.t()),eigenvectors=False)[0])
+            L = torch.max(torch.linalg.eigh(torch.mm(basis,basis.t()))[0])
             eta = 1./L
         else:
             eta = 1./cp.linalg.eigvalsh(cp.asarray(torch.mm(basis,basis.t()).cpu().numpy())).max().get().reshape(1)
-            eta = torch.from_numpy(eta.astype('float32')).cuda()
+            eta = torch.from_numpy(eta.astype('float32'))
 
-    #Res = torch.zeros(I.size()).type(dtype)
-    #ahat = torch.zeros(M,batch_size).type(dtype)
-    Res = torch.cuda.FloatTensor(I.size()).fill_(0)
-    ahat = torch.cuda.FloatTensor(M,batch_size).fill_(0)
+    Res = torch.zeros(I.size()).type(dtype)
+    ahat = torch.zeros(M,batch_size).type(dtype)
+    # Res = torch.cuda.FloatTensor(I.size()).fill_(0)
+    # ahat = torch.cuda.FloatTensor(M,batch_size).fill_(0)
 
     for t in range(num_iter):
         ahat = ahat.add(eta * basis.t().mm(Res))
