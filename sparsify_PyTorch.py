@@ -12,6 +12,8 @@ import torch
 import torch.nn.functional as F
 # import cupy as cp
 
+device = torch.device('mps')
+
 
 def quadraticBasisUpdate(basis, Res, ahat, lowestActivation, HessianDiag, stepSize = 0.001,constraint = 'L2', Noneg = False):
     """
@@ -45,8 +47,8 @@ def ISTA_PN(I,basis,lambd,num_iter,eta=None, useMAGMA=True):
             eta = 1./cp.linalg.eigvalsh(cp.asarray(torch.mm(basis,basis.t()).cpu().numpy())).max().get().reshape(1)
             eta = torch.from_numpy(eta.astype('float32'))
 
-    Res = torch.zeros(I.size()).type(dtype)
-    ahat = torch.zeros(M,batch_size).type(dtype)
+    Res = torch.zeros(I.size(), device=device)
+    ahat = torch.zeros(M,batch_size, device=device)
     # Res = torch.cuda.FloatTensor(I.size()).fill_(0)
     # ahat = torch.cuda.FloatTensor(M,batch_size).fill_(0)
 
@@ -74,9 +76,9 @@ def FISTA(I,basis,lambd,num_iter,eta=None, useMAGMA=True):
 
     tk_n = 1.
     tk = 1.
-    Res = torch.zeros(I.size()).type(dtype)
-    ahat = torch.zeros(M,batch_size).type(dtype)
-    ahat_y = torch.zeros(M,batch_size).type(dtype)
+    Res = torch.zeros(I.size(), device=device)
+    ahat = torch.zeros(M,batch_size, device=device)
+    ahat_y = torch.zeros(M,batch_size, device=device)
     # Res = torch.cuda.FloatTensor(I.size()).fill_(0)
     # ahat = torch.cuda.FloatTensor(M,batch_size).fill_(0)
     # ahat_y = torch.cuda.FloatTensor(M,batch_size).fill_(0)
@@ -105,8 +107,8 @@ def ISTA(I,basis,lambd,num_iter,eta=None, useMAGMA=True):
             eta = 1./cp.linalg.eigvalsh(cp.asarray(torch.mm(basis,basis.t()).cpu().numpy())).max().get().reshape(1)
             eta = torch.from_numpy(eta.astype('float32'))
 
-    Res = torch.zeros(I.size()).type(dtype)
-    ahat = torch.zeros(M,batch_size).type(dtype)
+    Res = torch.zeros(I.size(), device=device)
+    ahat = torch.zeros(M,batch_size, device=device)
     # Res = torch.cuda.FloatTensor(I.size()).fill_(0)
     # ahat = torch.cuda.FloatTensor(M,batch_size).fill_(0)
 
