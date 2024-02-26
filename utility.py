@@ -248,4 +248,26 @@ def patch_translation(patch,xshift,yshift):
     patch_new[locx_new:xdim+xshift,locy_new:ydim+yshift] = patch[locx:xdim-xshift,locy:ydim-yshift]
     return patch_new
 
+def Image2Patch(image, patch_size=5, plot=False):
+    # Unfold the image to extract patches
+    patches = image.unfold(0, patch_size, 1).unfold(1, patch_size, 1)
 
+    # Reshape to get the patches in the desired shape
+    patches = patches.contiguous().view(-1, patch_size * patch_size)
+
+    if plot:
+        print('patches.shape = ', patches.shape)  # Should print: torch.Size([576, 25])
+
+        col = 28 - patch_size + 1
+        figure = plt.figure(figsize=(col, col))
+        for i in range(1, col * col + 1):
+            figure.add_subplot(col, col, i)
+            plt.axis("off")
+            plt.imshow(patches[i - 1].view(patch_size, patch_size), cmap="gray")
+
+        plt.subplots_adjust(wspace=0.02, hspace=0.02)
+        plt.show()
+
+    return patches
+
+   
